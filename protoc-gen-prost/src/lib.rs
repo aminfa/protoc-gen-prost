@@ -214,6 +214,7 @@ struct Parameters {
 struct ProstParameters {
     btree_map: Vec<String>,
     bytes: Vec<String>,
+    boxed: Vec<String>,
     disable_comments: Vec<String>,
     default_package_filename: Option<String>,
     extern_path: Vec<(String, String)>,
@@ -232,6 +233,9 @@ impl ProstParameters {
         let mut config = prost_build::Config::new();
         config.btree_map(self.btree_map.iter());
         config.bytes(self.bytes.iter());
+        for b in self.boxed.iter() {
+            config.boxed(b);
+        }
         config.disable_comments(self.disable_comments.iter());
 
         if let Some(filename) = self.default_package_filename.as_deref() {
@@ -281,6 +285,10 @@ impl ProstParameters {
                 param: "bytes",
                 value,
             } => self.bytes.push(value.to_string()),
+            Param::Value {
+                param: "boxed",
+                value,
+            } => self.boxed.push(value.to_string()),
             Param::Parameter {
                 param: "default_package_filename",
             }
